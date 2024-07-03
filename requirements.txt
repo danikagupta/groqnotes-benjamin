@@ -78,3 +78,4 @@ zopfli==0.2.3
 # sudo apt install ffmpeg
 #
 pydub
+assemblyai

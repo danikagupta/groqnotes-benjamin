@@ -16,17 +16,16 @@ FILE_TOO_LARGE_MESSAGE = "The audio file is too large for the current size and r
 
 audio_file_path = None
 
+
 if 'api_key' not in st.session_state:
-    st.session_state.api_key = GROQ_API_KEY
+    if 'GROQ_API_KEY' in st.secrets:
+        st.session_state.api_key = st.secrets["GROQ_API_KEY"]
+    else:
+        st.session_state.api_key = GROQ_API_KEY
 
 if 'groq' not in st.session_state:
     if GROQ_API_KEY:
         st.session_state.groq = Groq()
-
-st.set_page_config(
-    page_title="GroqNotes",
-    page_icon="🗒️",
-)
       
 class GenerationStatistics:
     def __init__(self, input_time=0,output_time=0,input_tokens=0,output_tokens=0,total_time=0,model_name="llama3-8b-8192"):
@@ -277,60 +276,15 @@ def empty_st():
     st.empty()
 
 try:
-    with st.sidebar:
-        audio_files = {
-            "Transformers Explained by Google Cloud Tech": {
-                "file_path": "assets/audio/transformers_explained.m4a",
-                "youtube_link": "https://www.youtube.com/watch?v=SZorAJ4I-sA"
-            },
-            "The Essence of Calculus by 3Blue1Brown": {
-                "file_path": "assets/audio/essence_calculus.m4a",
-                "youtube_link": "https://www.youtube.com/watch?v=WUvTyaaNkzM"
-            },
-            "First 20 minutes of Groq's AMA": {
-                "file_path": "assets/audio/groq_ama_trimmed_20min.m4a",
-                "youtube_link": "https://www.youtube.com/watch?v=UztfweS-7MU"
-            }
-        }
 
-        st.write(f"# 🗒️ GroqNotes \n## Generate notes from audio in seconds using Groq, Whisper, and Llama3")
-        st.markdown(f"[Github Repository](https://github.com/bklieger/groqnotes)\n\nAs with all generative AI, content may include inaccurate or placeholder information. GroqNotes is in beta and all feedback is welcome!")
+    st.write("# Customization Settings\n🧪 These settings are experimental.\n")
+    st.write(f"By default, GroqNotes uses Llama3-70b for generating the notes outline and Llama3-8b for the content. This balances quality with speed and rate limit usage. You can customize these selections below.")
+    outline_model_options = ["llama3-70b-8192", "llama3-8b-8192", "mixtral-8x7b-32768", "gemma-7b-it"]
+    outline_selected_model = st.selectbox("Outline generation:", outline_model_options)
+    content_model_options = ["llama3-8b-8192", "llama3-70b-8192", "mixtral-8x7b-32768", "gemma-7b-it"]
+    content_selected_model = st.selectbox("Content generation:", content_model_options)
 
-        st.write(f"---")
 
-        st.write(f"# Sample Audio Files")
-
-        for audio_name, audio_info in audio_files.items():
-
-            st.write(f"### {audio_name}")
-            
-            # Read audio file as binary
-            with open(audio_info['file_path'], 'rb') as audio_file:
-                audio_bytes = audio_file.read()
-
-            # Create download button
-            st.download_button(
-                label=f"Download audio",
-                data=audio_bytes,
-                file_name=audio_info['file_path'],
-                mime='audio/m4a'
-            )
-            
-            st.markdown(f"[Credit Youtube Link]({audio_info['youtube_link']})")
-            st.write(f"\n\n")
-        
-        st.write(f"---")
-
-        st.write("# Customization Settings\n🧪 These settings are experimental.\n")
-        st.write(f"By default, GroqNotes uses Llama3-70b for generating the notes outline and Llama3-8b for the content. This balances quality with speed and rate limit usage. You can customize these selections below.")
-        outline_model_options = ["llama3-70b-8192", "llama3-8b-8192", "mixtral-8x7b-32768", "gemma-7b-it"]
-        outline_selected_model = st.selectbox("Outline generation:", outline_model_options)
-        content_model_options = ["llama3-8b-8192", "llama3-70b-8192", "mixtral-8x7b-32768", "gemma-7b-it"]
-        content_selected_model = st.selectbox("Content generation:", content_model_options)
-
-        
-        # Add note about rate limits
-        st.info("Important: Different models have different token and rate limits which may cause runtime errors.")
     
 
     if st.button('End Generation and Download Notes'):
