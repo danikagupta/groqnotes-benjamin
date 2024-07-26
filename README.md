@@ -32,6 +32,10 @@
 
 GroqNotes is a streamlit app that scaffolds the creation of structured lecture notes by iteratively structuring and generating notes from transcribed audio lectures using Groq's Whisper API. The app mixes Llama3-8b and Llama3-70b, utilizing the larger model for generating the notes structure and the faster of the two for creating the content.
 
+### Uses multiple Llama models
+- 70B model for the planning
+- 8G model for the writing of individual sections
+
 
 ### Features
 
